@@ -1,0 +1,305 @@
+# DB Sentinel Utility Configuration File
+# Production-grade Oracle Database Comparison and Synchronization Tool
+# Version: 1.0
+
+# =============================================================================
+# DATABASE CONNECTIONS
+# =============================================================================
+
+# Source Database Configuration
+source_db:
+  host: "source-oracle-server.company.com"
+  port: 1521
+  service_name: "PRODDB"
+  username: "SOURCE_USER"
+  password: "source_password_here"
+  # Optional: Connection pool specific settings
+  connection_timeout: 30
+  retry_attempts: 3
+
+# Target Database Configuration  
+target_db:
+  host: "target-oracle-server.company.com"
+  port: 1521
+  service_name: "STAGINGDB"
+  username: "TARGET_USER" 
+  password: "target_password_here"
+  # Optional: Connection pool specific settings
+  connection_timeout: 30
+  retry_attempts: 3
+
+# =============================================================================
+# TABLES TO COMPARE
+# =============================================================================
+
+tables:
+  # Example 1: Customer table comparison
+  - source_schema: "SALES"
+    target_schema: "SALES_STAGING"
+    table_name: "CUSTOMERS"
+    primary_key: ["CUSTOMER_ID"]
+    batch_size: 10000
+    where_clause: "STATUS = 'ACTIVE'"
+    exclude_columns: ["LAST_MODIFIED_DATE", "AUDIT_TIMESTAMP"]
+    hash_algorithm: "sha256"
+    
+  # Example 2: Orders table with composite primary key
+  - source_schema: "SALES"
+    target_schema: "SALES_STAGING"
+    table_name: "ORDERS"
+    primary_key: ["ORDER_ID", "ORDER_LINE_ID"]
+    batch_size: 5000
+    where_clause: "ORDER_DATE >= SYSDATE - 30"
+    exclude_columns: ["CREATED_TIMESTAMP", "UPDATED_BY"]
+    hash_algorithm: "sha256"
+    
+  # Example 3: Products table with different schemas
+  - source_schema: "INVENTORY"
+    target_schema: "INV_REPLICA"
+    table_name: "PRODUCTS"
+    primary_key: ["PRODUCT_ID"]
+    batch_size: 15000
+    where_clause: ""
+    exclude_columns: ["SYNC_FLAG", "LAST_SYNC_DATE"]
+    hash_algorithm: "sha1"
+    
+  # Example 4: User profiles table
+  - source_schema: "USERS"
+    target_schema: "USERS_BACKUP"
+    table_name: "USER_PROFILES"
+    primary_key: ["USER_ID"]
+    batch_size: 8000
+    where_clause: "ACCOUNT_STATUS IN ('ACTIVE', 'SUSPENDED')"
+    exclude_columns: ["PASSWORD_HASH", "LAST_LOGIN_IP"]
+    hash_algorithm: "sha256"
+    
+  # Example 5: Financial transactions (large table)
+  - source_schema: "FINANCE"
+    target_schema: "FINANCE_DR"
+    table_name: "TRANSACTIONS"
+    primary_key: ["TRANSACTION_ID"]
+    batch_size: 20000
+    where_clause: "TRANSACTION_DATE >= SYSDATE - 90"
+    exclude_columns: ["PROCESSING_FLAGS", "AUDIT_COLS"]
+    hash_algorithm: "sha256"
+
+# =============================================================================
+# PERFORMANCE CONFIGURATION
+# =============================================================================
+
+performance:
+  # Batch processing settings
+  batch_size: 10000                    # Default batch size if not specified per table
+  max_workers: 8                       # Number of parallel threads (adjust based on CPU cores)
+  connection_pool_size: 5              # Maximum connections per database
+  timeout_seconds: 300                 # Query timeout in seconds
+  
+  # Memory management
+  max_memory_usage_mb: 2048            # Maximum memory usage per process
+  batch_memory_limit_mb: 512           # Memory limit per batch
+  
+  # Progress tracking
+  progress_update_interval: 100        # Update progress every N batches
+  enable_progress_bar: true            # Show progress bar (minimal overhead)
+
+# =============================================================================
+# LOGGING CONFIGURATION
+# =============================================================================
+
+logging:
+  level: "INFO"                        # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s"
+  file_enabled: true                   # Enable file logging
+  console_enabled: true                # Enable console logging
+  
+  # Log file settings
+  max_file_size_mb: 100               # Maximum log file size
+  backup_count: 5                     # Number of backup log files to keep
+  
+  # Performance logging
+  log_batch_progress: true            # Log individual batch progress
+  log_performance_metrics: true       # Log detailed performance metrics
+  log_sql_statements: false           # Log generated SQL (for debugging only)
+
+# =============================================================================
+# RESTART AND RESUME CAPABILITY
+# =============================================================================
+
+restart:
+  enabled: true                        # Enable restart/resume functionality
+  metadata_table: "DB_SENTINEL_METADATA"  # Table to store progress metadata
+  metadata_schema: "SENTINEL_ADMIN"   # Schema for metadata table
+  cleanup_on_success: true            # Clean up metadata after successful run
+  
+  # Checkpoint settings
+  checkpoint_interval: 1000           # Save progress every N batches
+  auto_resume: true                   # Automatically resume on restart
+  max_retry_attempts: 3               # Maximum retry attempts for failed batches
+
+# =============================================================================
+# POST-COMPARISON VERIFICATION
+# =============================================================================
+
+verification:
+  enabled: true                       # Enable post-verification of SQL statements
+  skip_existing_check: false         # Skip verification if row already exists
+  generate_verified_sql: true        # Generate new SQL files with verified statements
+  
+  # Verification batch settings
+  verification_batch_size: 1000      # Batch size for verification queries
+  max_verification_threads: 4        # Parallel verification threads
+  
+  # Constraint checking
+  check_referential_integrity: true  # Check foreign key constraints
+  validate_data_types: true          # Validate data type compatibility
+  check_unique_constraints: true     # Check unique constraint violations
+
+# =============================================================================
+# AUDIT TABLE CONFIGURATION
+# =============================================================================
+
+audit_table:
+  enabled: true                       # Enable audit table updates
+  table_name: "DB_SENTINEL_AUDIT"     # Audit table name
+  schema: "SENTINEL_ADMIN"            # Schema for audit table
+  include_runtime_stats: true        # Include detailed runtime statistics
+  
+  # Audit data retention
+  retention_days: 90                  # Keep audit records for 90 days
+  auto_cleanup: true                  # Automatically clean old records
+  
+  # Audit detail level
+  log_table_statistics: true         # Log per-table statistics
+  log_batch_details: false           # Log individual batch details (large volume)
+  log_error_details: true            # Log detailed error information
+
+# =============================================================================
+# ADVANCED SETTINGS
+# =============================================================================
+
+advanced:
+  # Hash algorithm settings
+  default_hash_algorithm: "sha256"    # Default hashing algorithm
+  hash_chunk_size: 8192               # Chunk size for large text hashing
+  
+  # Oracle specific settings
+  oracle_client_version: "21c"       # Oracle client version
+  enable_thick_mode: true            # Use Oracle thick client mode for better performance
+  
+  # Error handling
+  continue_on_error: true             # Continue processing other tables on error
+  max_error_threshold: 5              # Stop if more than N tables fail
+  
+  # Output settings
+  compress_output_files: false       # Compress generated SQL files
+  include_execution_plan: false      # Include execution plans in SQL files
+  generate_rollback_scripts: true    # Generate rollback scripts
+  
+  # Security settings
+  mask_sensitive_data: false         # Mask sensitive data in logs and reports
+  encrypt_audit_logs: false          # Encrypt audit log files
+
+# =============================================================================
+# EMAIL NOTIFICATIONS (Optional)
+# =============================================================================
+
+notifications:
+  enabled: false                      # Enable email notifications
+  smtp_server: "smtp.company.com"
+  smtp_port: 587
+  username: "sentinel@company.com"
+  password: "smtp_password"
+  
+  # Notification triggers
+  notify_on_completion: true         # Send email on completion
+  notify_on_error: true              # Send email on error
+  notify_on_differences: true        # Send email if differences found
+  
+  # Recipients
+  recipients:
+    - "dba@company.com"
+    - "data-team@company.com"
+  
+  # Email content
+  include_summary: true              # Include summary in email
+  attach_reports: false              # Attach report files (can be large)
+
+# =============================================================================
+# ENVIRONMENT SPECIFIC OVERRIDES
+# =============================================================================
+
+# These settings can override the above based on environment
+# Uncomment and modify as needed for different environments
+
+# development:
+#   logging:
+#     level: "DEBUG"
+#   performance:
+#     batch_size: 1000
+#     max_workers: 2
+#   verification:
+#     enabled: false
+
+# staging:
+#   performance:
+#     batch_size: 5000
+#     max_workers: 4
+#   audit_table:
+#     retention_days: 30
+
+# production:
+#   logging:
+#     level: "INFO"
+#   performance:
+#     batch_size: 50000
+#     max_workers: 16
+#   notifications:
+#     enabled: true
+
+# =============================================================================
+# SAMPLE SCHEDULES AND AUTOMATION
+# =============================================================================
+
+# scheduling:
+#   # Cron-like scheduling (if implementing scheduler)
+#   daily_sync: "0 2 * * *"          # Run daily at 2 AM
+#   hourly_check: "0 * * * *"        # Run hourly
+#   
+#   # Conditional execution
+#   run_if_changes_detected: true     # Only run if changes detected
+#   max_runtime_minutes: 480          # Maximum runtime (8 hours)
+
+# =============================================================================
+# END OF CONFIGURATION
+# =============================================================================
+
+# Configuration file version for compatibility checking
+config_version: "1.0"
+
+# Last modified information
+last_modified: "2024-01-15"
+modified_by: "Database Administrator"
+
+# Notes and comments for maintenance
+notes: |
+  This configuration file controls all aspects of the DB Sentinel utility.
+  
+  Key points for maintenance:
+  1. Update database passwords regularly
+  2. Adjust batch_size based on table sizes and system performance
+  3. Monitor max_workers setting based on system load
+  4. Review table list regularly to add/remove tables as needed
+  5. Ensure audit table schema exists and has proper permissions
+  
+  For production use:
+  - Use strong passwords and consider using Oracle Wallet
+  - Enable audit_table for compliance tracking
+  - Set appropriate logging levels
+  - Configure email notifications for monitoring
+  - Test restart/resume functionality before production deployment
+  
+  Performance tuning guidelines:
+  - Increase batch_size for very large tables (>1M rows)
+  - Adjust max_workers based on CPU cores and database load
+  - Monitor memory usage and adjust memory limits accordingly
+  - Use appropriate hash algorithms (sha256 recommended for security)

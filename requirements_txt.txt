@@ -1,0 +1,156 @@
+# DB Sentinel Utility - Python Dependencies
+# Production-grade Oracle Database Comparison Tool
+# Version: 1.0
+
+# Core Database Connectivity
+# Modern Oracle database driver (replaces cx_Oracle)
+oracledb>=1.4.0
+
+# Data Processing and Analysis
+# High-performance data structures and analysis tools
+pandas>=1.5.0
+numpy>=1.21.0
+
+# Configuration Management
+# YAML configuration file parsing
+PyYAML>=6.0
+
+# Progress Tracking
+# Fast, extensible progress meter for loops and CLI
+tqdm>=4.64.0
+
+# Data Type Support Dependencies
+# Enhanced date/time parsing for various formats
+python-dateutil>=2.8.2
+
+# Enhanced JSON handling and validation
+# Note: json is built-in, but for validation:
+# jsonschema>=4.17.0  # Uncomment if JSON schema validation needed
+
+# Character encoding detection for binary/text data
+# chardet>=5.0.0  # Uncomment if automatic encoding detection needed
+
+# Optional Dependencies for Enhanced Features
+# Uncomment as needed for additional functionality
+
+# Enhanced Logging (optional)
+# colorlog>=6.7.0
+
+# Memory Profiling (development/debugging)
+# memory-profiler>=0.60.0
+
+# Performance Monitoring (optional)
+# psutil>=5.9.0
+
+# Secure Password Handling (recommended for production)
+# cryptography>=3.4.8
+# keyring>=23.0.0
+
+# Email Notifications (if using notification features)
+# smtplib is built-in, but for enhanced email features:
+# email-validator>=1.3.0
+
+# Excel Report Generation (optional)
+# openpyxl>=3.0.10
+# xlsxwriter>=3.0.3
+
+# Advanced Scheduling (if implementing scheduler)
+# schedule>=1.2.0
+# APScheduler>=3.9.0
+
+# Data Type Testing and Validation (development)
+# Used by test_data_types.py for comprehensive testing
+# unittest is built-in
+# decimal is built-in (for precise numeric handling)
+# base64 is built-in (for binary data encoding)
+
+# Development and Testing Dependencies
+# Uncomment for development environment
+
+# Testing Framework
+# pytest>=7.0.0
+# pytest-cov>=4.0.0
+# pytest-mock>=3.8.0
+# pytest-benchmark>=4.0.0  # For performance testing
+
+# Code Quality
+# black>=22.0.0
+# flake8>=5.0.0
+# pylint>=2.15.0
+# mypy>=0.991
+
+# Documentation
+# sphinx>=5.0.0
+# sphinx-rtd-theme>=1.0.0
+
+# Build and Distribution
+# build>=0.8.0
+# wheel>=0.37.0
+# twine>=4.0.0
+
+# Minimum Python Version Requirements
+# This utility requires Python 3.8 or higher
+# Python 3.8: End of life October 2024
+# Python 3.9: End of life October 2025  
+# Python 3.10: End of life October 2026
+# Python 3.11: End of life October 2027
+# Python 3.12: End of life October 2028
+
+# Data Type Support Notes:
+# The utility now provides comprehensive support for:
+# - Numeric: NUMBER, INTEGER, SMALLINT, BIGINT, FLOAT, DOUBLE, DECIMAL, NUMERIC
+# - Character: VARCHAR, CHAR, TEXT, NVARCHAR, CLOB, NCLOB
+# - Date/Time: DATE, TIMESTAMP, TIME, DATETIME (with timezone support)
+# - Binary: BLOB, BINARY, VARBINARY, RAW
+# - Special: BOOLEAN, JSON, XML
+
+# Built-in Python modules used (no installation required):
+# - datetime: For date/time handling
+# - decimal: For precise numeric calculations
+# - json: For JSON data processing
+# - base64: For binary data encoding
+# - hashlib: For data hashing (md5, sha1, sha256)
+# - re: For regular expression pattern matching
+# - unittest: For comprehensive testing framework
+
+# Platform Specific Notes:
+# - Windows: Ensure Oracle Instant Client is installed and accessible
+# - Linux: Install Oracle Instant Client packages via package manager
+# - Docker: Use official Oracle Database images or install client in container
+# - Cloud: Ensure proper network connectivity and firewall rules
+
+# Performance Optimization Notes:
+# - For large datasets (>10M rows), consider increasing available memory
+# - Use thick mode Oracle client for better performance where possible
+# - Adjust batch_size in configuration based on available memory and network latency
+# - Monitor system resources during parallel processing
+# - Data type normalization adds minimal overhead (~5-10% for most operations)
+
+# Security Considerations:
+# - Store database passwords securely (environment variables, Oracle Wallet, etc.)
+# - Use encrypted connections (TLS/SSL) for database connections
+# - Implement proper access controls for configuration files
+# - Regular security updates for all dependencies
+# - Binary data is base64 encoded for secure handling
+
+# Data Type Handling Features:
+# ✅ Intelligent type detection from Oracle metadata
+# ✅ Normalization for consistent hashing across representations
+# ✅ Type-aware SQL generation with proper escaping
+# ✅ Cross-database compatibility mapping
+# ✅ Robust error handling for edge cases
+# ✅ Performance optimized for large-scale operations
+
+# Production Deployment Checklist:
+# □ All dependencies installed and tested
+# □ Oracle client properly configured
+# □ Database connectivity verified
+# □ Configuration file secured and validated
+# □ Data type mappings tested with sample data
+# □ Logging directory writable
+# □ Output directories created with proper permissions
+# □ Backup and recovery procedures documented
+# □ Monitoring and alerting configured
+# □ Performance baseline established with data type overhead
+# □ Data type compatibility validated between source and target
+
